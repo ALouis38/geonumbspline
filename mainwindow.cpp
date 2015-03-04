@@ -22,7 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     srand (time(NULL));
 
-    int n = 4;
     listePoints.push_back(QPointF(50,50));
     listePoints.push_back(QPointF(140,180));
     listePoints.push_back(QPointF(60,130));
@@ -33,6 +32,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //    draw2();
 //   draw3();
+
+    draw();
+
+
 
 }
 
@@ -52,8 +55,49 @@ void MainWindow::draw()
     tabT = std::vector<double>(m+1); //tableau des noeuds
 
     //Remplissage du tableau de noeuds
-    for (int i = 0; i < tabT.size(); ++i) {
+    for (size_t i = 0; i < tabT.size(); ++i) {
         tabT[i] = i;
+    }
+
+
+    ///Ajouts Louis
+    std::vector<QPointF> listPointTmp;
+    std::vector<QPointF> listPointTmp2;
+
+    for (int j = k; j < n+1; ++j) {
+        listPointTmp = listePoints;
+
+        double t = tabT[j];
+        while (t < tabT[j+1]) {
+            //Calcul de d(k,j)
+            for (int r = 0; r < k+1; ++r) {
+                for (int i = 1; i < k+1; ++i) {
+                    double om = calculOmega(k-r,i,t);
+//                    std::cout << " k-r = " << k-r << " i = " << i << " t = " << t
+//                              << " j = " << j << " n = " << n << std::endl;
+//                    std::cout << "om = " << om << std::endl;
+                    double nouvX = om*listPointTmp[i].x() + (1.0-om)*listPointTmp[i].x();
+                    double nouvY = om*listPointTmp[i].y() + (1.0-om)*listPointTmp[i].y();
+                    listPointTmp2.push_back(QPointF(nouvX,nouvY));
+                }
+                listPointTmp = listPointTmp2;
+            }
+            listePointsFinaux.push_back(listPointTmp2[0]);
+            listPointTmp2.clear();
+            t = t+ 0.1;
+
+        }
+    }
+
+    afficherListePoints(listePoints,qRgb(0,0,0));
+    afficherListePoints(listePointsFinaux, qRgb(0,255,0));
+
+    for (int var = 0; var < listePoints.size(); ++var) {
+        std::cout << "(" << listePoints[var].x() << "," << listePoints[var].y() << ")" << std::endl;
+    }
+
+    for (int var = 0; var < listePointsFinaux.size(); ++var) {
+        std::cout << "(" << listePointsFinaux[var].x() << "," << listePointsFinaux[var].y() << ")" << std::endl;
     }
 
 
@@ -64,66 +108,66 @@ void MainWindow::draw()
 }
 
 
-std::vector<double> * MainWindow::polynomeNi(int i, int k, std::vector<double> &t) {
-    std::vector<double> *res = std::vector<double>(t.size());
+//std::vector<double> * MainWindow::polynomeNi(int i, int k, std::vector<double> &t) {
+//    std::vector<double> *res = std::vector<double>(t.size());
 
-    if (k == 0) {
-        for (size_t j = 0; j < t.size(); ++j) {
-            if (t[j] >= tabT[i] && t[j] < tabT[i+1]) {
-                res[j] = 1;
-            } else {
-                res[j] = 0;
-            }
-        }
-        return res;
-    }
+//    if (k == 0) {
+//        for (size_t j = 0; j < t.size(); ++j) {
+//            if (t[j] >= tabT[i] && t[j] < tabT[i+1]) {
+//                res[j] = 1;
+//            } else {
+//                res[j] = 0;
+//            }
+//        }
+//        return res;
+//    }
 
-    std::vector<double> *omega1 = calculOmega(i, k, t);
-    std::vector<double> *omega2 = calculOmega(i+1, k, t);
+//    std::vector<double> *omega1 = calculOmega(i, k, t);
+//    std::vector<double> *omega2 = calculOmega(i+1, k, t);
 
-    std::vector<double> *Nikmoins1 = polynomeNi(i, k-1, t);
-    std::vector<double> *Niplus1kmoins1 = polynomeNi(i+1, k-1, t);
+//    std::vector<double> *Nikmoins1 = polynomeNi(i, k-1, t);
+//    std::vector<double> *Niplus1kmoins1 = polynomeNi(i+1, k-1, t);
 
-    for (size_t j = 0; j < t.size(); ++j) {
-        res[j] = omega1[j] * Nikmoins1[j] + (1 - omega2[j]) * Niplus1kmoins1[j];
-    }
+//    for (size_t j = 0; j < t.size(); ++j) {
+//        res[j] = omega1[j] * Nikmoins1[j] + (1 - omega2[j]) * Niplus1kmoins1[j];
+//    }
 
-    return res;
-}
+//    return res;
+//}
 
-std::vector<double> * MainWindow::clone( std::vector<double>& vect){
-    std::vector<QPointF> *res = new std::vector<QPointF>(0);
-    for (size_t i = 0; i < vect.size(); ++i) {
-        res[i] = vec[i];
-    }
-    return res;
-}
+//std::vector<double> * MainWindow::clone( std::vector<double>& vect){
+//    std::vector<QPointF> *res = new std::vector<QPointF>(0);
+//    for (size_t i = 0; i < vect.size(); ++i) {
+//        res[i] = vec[i];
+//    }
+//    return res;
+//}
 
-std::vector<double> * MainWindow::fonctionRecursive(int i, int r, std::vector<double> &t) {
-    std::vector<double> *res = std::vector<double>(t.size());
-    int k = 2;
-    std::vector<QPointF> *listPointTmp1;
-    std::vector<QPointF> *listPointTmp2 = new std::vector<QPointF>(0);
+//std::vector<double> * MainWindow::fonctionRecursive(int i, int r, std::vector<double> &t) {
+//    std::vector<double> *res = std::vector<double>(t.size());
+//    int k = 2;
+//    std::vector<QPointF> *listPointTmp1;
+//    std::vector<QPointF> *listPointTmp2 = new std::vector<QPointF>(0);
 
-    std::vector<double> *omega = calculOmega(i, k-r-1, t);
+//    std::vector<double> *omega = calculOmega(i, k-r-1, t);
 
-    for (size_t i = 0; i < t.size()-1; ++i) {
-        listPointTmp1 = clone(listePoints);
-        listPointTmp2->clear();
-        for (size_t j = 0; j < listePointTmp1.size(); ++j) {
-            if (t >= t[i] && t < t[i+1]) {
-                listPointTmp2->push_back( omega[i] * listPointTmp1[j] + (1 - omega[i]) * listPointTmp1[j+1] );
-            }
-        }
-    }
+//    for (size_t i = 0; i < t.size()-1; ++i) {
+//        listPointTmp1 = clone(listePoints);
+//        listPointTmp2->clear();
+//        for (size_t j = 0; j < listePointTmp1.size(); ++j) {
+//            if (t >= t[i] && t < t[i+1]) {
+//                listPointTmp2->push_back( omega[i] * listPointTmp1[j] + (1 - omega[i]) * listPointTmp1[j+1] );
+//            }
+//        }
+//    }
 
 
-    for (size_t j = 0; j < t.size(); ++j) {
-        res[j] = omega1[j] * Nikmoins1[j] + (1 - omega2[j]) * Niplus1kmoins1[j];
-    }
+//    for (size_t j = 0; j < t.size(); ++j) {
+//        res[j] = omega1[j] * Nikmoins1[j] + (1 - omega2[j]) * Niplus1kmoins1[j];
+//    }
 
-    return res;
-}
+//    return res;
+//}
 
 std::vector<double> * MainWindow::calculOmega(int i, int k, std::vector<double> &t)
 {
@@ -164,7 +208,7 @@ void MainWindow::afficherListePoints(std::vector<QPointF> &listeP, QRgb rgb)
 double MainWindow::calculOmega(int k, int i, double t)
 {
     if (tabT[i] < tabT[i+k]) {
-        return (t - tabT[i])/(tabT[i+k]-tabT[i]);
+        return (t - tabT[i])/(double(tabT[i+k])-double(tabT[i]));
     } else {
         return 0;
     }
@@ -172,6 +216,6 @@ double MainWindow::calculOmega(int k, int i, double t)
 
 double MainWindow::calculNi(int k, int i, double t)
 {
-
+    return 0.0;
 }
 

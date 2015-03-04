@@ -30,7 +30,7 @@ private:
     std::vector<double> tabT;
 
     void draw();
-    std::vector<double> * MainWindow::polynomeNi(int i, int k, std::vector<double> &t);
+//    std::vector<double> * MainWindow::polynomeNi(int i, int k, std::vector<double> &t);
     std::vector<double> * calculOmega(int i, int k, std::vector<double> & t);
 
     QPointF rechercherPoint(QPointF p1, QPointF p2, double t);
