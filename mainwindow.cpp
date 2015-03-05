@@ -22,20 +22,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     srand (time(NULL));
 
-    listePoints.push_back(QPointF(50,50));
-    listePoints.push_back(QPointF(140,180));
-    listePoints.push_back(QPointF(60,130));
-    listePoints.push_back(QPointF(3.14159265369, 0.5));
-
-
-//    listePoints.push_back(QPointF(200,200));
-
-//    draw2();
-//   draw3();
+    listePoints.push_back(QPointF(150,150));
+    listePoints.push_back(QPointF(200,100));
+    listePoints.push_back(QPointF(300,110));
+    listePoints.push_back(QPointF(400, 150));
 
     draw();
-
-
 
 }
 
@@ -44,11 +36,10 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
 void MainWindow::draw()
 {
     int k = 2; //degré de la courbe
-    int n = 4; //nb de pts de la courbe
+    int n = 6; //nb de pts de la courbe
 
     int m = k+n+1;
 
@@ -61,42 +52,68 @@ void MainWindow::draw()
 
 
     ///Ajouts Louis
+    std::vector<QPointF> etageDuDessus;
     std::vector<QPointF> listPointTmp;
-    std::vector<QPointF> listPointTmp2;
 
-    for (int j = k; j < n+1; ++j) {
-        listPointTmp = listePoints;
+    for (float t = tabT[k]; t < tabT[n+1]; t+=0.2) {
+        etageDuDessus = listePoints;
 
-        double t = tabT[j];
-        while (t < tabT[j+1]) {
+        int j = (int)t;
+        //while (t < tabT[j+1]) {
             //Calcul de d(k,j)
-            for (int r = 0; r < k+1; ++r) {
-                for (int i = 1; i < k+1; ++i) {
+            for (int r = 1; r < k+1; ++r) {//il y a une modif ici
+                for (int i = r; i <= j; ++i) {
                     double om = calculOmega(k-r,i,t);
 //                    std::cout << " k-r = " << k-r << " i = " << i << " t = " << t
 //                              << " j = " << j << " n = " << n << std::endl;
 //                    std::cout << "om = " << om << std::endl;
-                    double nouvX = om*listPointTmp[i].x() + (1.0-om)*listPointTmp[i].x();
-                    double nouvY = om*listPointTmp[i].y() + (1.0-om)*listPointTmp[i].y();
-                    listPointTmp2.push_back(QPointF(nouvX,nouvY));
+                    double nouvX = om*etageDuDessus[i].x() + (1.0-om)*etageDuDessus[i-1].x();
+                    double nouvY = om*etageDuDessus[i].y() + (1.0-om)*etageDuDessus[i-1].y();
+                    listPointTmp.push_back(QPointF(nouvX,nouvY));
                 }
-                listPointTmp = listPointTmp2;
+                etageDuDessus = listPointTmp;
+                listPointTmp.clear();
             }
-            listePointsFinaux.push_back(listPointTmp2[0]);
-            listPointTmp2.clear();
-            t = t+ 0.1;
+            listePointsFinaux.push_back(etageDuDessus[0]);
+            t = t + 0.1;
 
-        }
+        //}
     }
+
+
+//    for (int j = k; j < n+1; ++j) {
+//        etageDuDessus = listePoints;
+
+//        double t = tabT[j];
+//        while (t < tabT[j+1]) {
+//            //Calcul de d(k,j)
+//            for (int r = 1; r < k+1; ++r) {//il y a une modif ici
+//                for (int i = r; i < k+1; ++i) {
+//                    double om = calculOmega(k-r,i,t);
+////                    std::cout << " k-r = " << k-r << " i = " << i << " t = " << t
+////                              << " j = " << j << " n = " << n << std::endl;
+////                    std::cout << "om = " << om << std::endl;
+//                    double nouvX = om*etageDuDessus[i].x() + (1.0-om)*etageDuDessus[i-1].x();
+//                    double nouvY = om*etageDuDessus[i].y() + (1.0-om)*etageDuDessus[i-1].y();
+//                    listPointTmp.push_back(QPointF(nouvX,nouvY));
+//                }
+//                etageDuDessus = listPointTmp;
+//                listPointTmp.clear();
+//            }
+//            listePointsFinaux.push_back(etageDuDessus[0]);
+//            t = t + 0.1;
+
+//        }
+//    }
 
     afficherListePoints(listePoints,qRgb(0,0,0));
     afficherListePoints(listePointsFinaux, qRgb(0,255,0));
 
-    for (int var = 0; var < listePoints.size(); ++var) {
+    for (size_t var = 0; var < listePoints.size(); ++var) {
         std::cout << "(" << listePoints[var].x() << "," << listePoints[var].y() << ")" << std::endl;
     }
 
-    for (int var = 0; var < listePointsFinaux.size(); ++var) {
+    for (size_t var = 0; var < listePointsFinaux.size(); ++var) {
         std::cout << "(" << listePointsFinaux[var].x() << "," << listePointsFinaux[var].y() << ")" << std::endl;
     }
 
