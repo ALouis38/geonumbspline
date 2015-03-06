@@ -22,9 +22,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     srand (time(NULL));
 
-    listePoints.push_back(QPointF(150,150));
-    listePoints.push_back(QPointF(200,100));
-    listePoints.push_back(QPointF(300,110));
+    listePoints.push_back(QPointF(150, 150));
+    listePoints.push_back(QPointF(200, 100));
+    listePoints.push_back(QPointF(300, 110));
     listePoints.push_back(QPointF(400, 150));
 
     draw();
@@ -36,92 +36,136 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::draw()
-{
-    int k = 2; //degré de la courbe
-    int n = 6; //nb de pts de la courbe
+void MainWindow::draw2() {
+    int k = 2;
+    int n = 3;
+    int m = n+k+1;
 
-    int m = k+n+1;
-
-    tabT = std::vector<double>(m+1); //tableau des noeuds
-
-    //Remplissage du tableau de noeuds
+    tabT = std::vector<double>(m+1);
     for (size_t i = 0; i < tabT.size(); ++i) {
         tabT[i] = i;
     }
 
-
-    ///Ajouts Louis
     std::vector<QPointF> etageDuDessus;
     std::vector<QPointF> listPointTmp;
 
-    for (float t = tabT[k]; t < tabT[n+1]; t+=0.2) {
-        etageDuDessus = listePoints;
+    for (int t = tabT[k]; t < tabT[n+1]; ++t) {
+        int j = floor(t);
+        // Initialization de etageDuDessus
+        for (int var = 0; var < k+1; ++var) {
+            etageDuDessus.push_back(listePoints[j-k+var]);
+        }
+        for (int tj = tabT[j]; tj < tabT[j+1]; ++tj) {
 
-        int j = (int)t;
-        //while (t < tabT[j+1]) {
-            //Calcul de d(k,j)
-            for (int r = 1; r < k+1; ++r) {//il y a une modif ici
-                for (int i = r; i <= j; ++i) {
-                    double om = calculOmega(k-r,i,t);
-//                    std::cout << " k-r = " << k-r << " i = " << i << " t = " << t
-//                              << " j = " << j << " n = " << n << std::endl;
-//                    std::cout << "om = " << om << std::endl;
+            // Calcul du d(k,j)
+            for (int r = 1; r < k+1; ++r) {
+                for (int i = 1; i < etageDuDessus.size(); ++i) {
+                    double om = calculOmega(k-r-1, j-k+i-1, t);// - 1 ??
                     double nouvX = om*etageDuDessus[i].x() + (1.0-om)*etageDuDessus[i-1].x();
                     double nouvY = om*etageDuDessus[i].y() + (1.0-om)*etageDuDessus[i-1].y();
                     listPointTmp.push_back(QPointF(nouvX,nouvY));
                 }
+
                 etageDuDessus = listPointTmp;
                 listPointTmp.clear();
             }
+
             listePointsFinaux.push_back(etageDuDessus[0]);
             t = t + 0.1;
-
-        //}
+        }
     }
 
+    afficherListePoints(listePoints,qRgb(0,0,0));
+    afficherListePoints(listePointsFinaux, qRgb(0,255,0));
+}
+
+void MainWindow::draw()
+{
+//    int k = 2; //degré de la courbe
+//    int n = 3; //nb de pts de la courben+1
+
+//    int m = k+n+1;
+
+//    tabT = std::vector<double>(m+1); //tableau des noeuds
+
+//    //Remplissage du tableau de noeuds
+//    for (size_t i = 0; i < tabT.size(); ++i) {
+//        tabT[i] = i;
+//    }
+
+
+//    ///Ajouts Louis
+//    std::vector<QPointF> etageDuDessus;
+//    std::vector<QPointF> listPointTmp;
+
+////    for (float t = tabT[k]; t < tabT[n+1]; t+=0.2) {
+////        etageDuDessus = listePoints;
+
+////        int j = (int)t;
+////        //while (t < tabT[j+1]) {
+////            //Calcul de d(k,j)
+////            for (int r = 1; r < k+1; ++r) {//il y a une modif ici
+////                for (int i = r; i <= j; ++i) {
+////                    double om = calculOmega(k-r,i,t);
+//////                    std::cout << " k-r = " << k-r << " i = " << i << " t = " << t
+//////                              << " j = " << j << " n = " << n << std::endl;
+//////                    std::cout << "om = " << om << std::endl;
+////                    double nouvX = om*etageDuDessus[i].x() + (1.0-om)*etageDuDessus[i-1].x();
+////                    double nouvY = om*etageDuDessus[i].y() + (1.0-om)*etageDuDessus[i-1].y();
+////                    listPointTmp.push_back(QPointF(nouvX,nouvY));
+////                }
+////                etageDuDessus = listPointTmp;
+////                listPointTmp.clear();
+////            }
+////            listePointsFinaux.push_back(etageDuDessus[0]);
+////            t = t + 0.1;
+
+////        //}
+////    }
 
 //    for (int j = k; j < n+1; ++j) {
-//        etageDuDessus = listePoints;
-
+////        etageDuDessus = listePoints;
+//        for (int var = 0; var < j+1; ++var) {
+//            etageDuDessus.push_back(listePoints[j-k+var]);
+//        }
 //        double t = tabT[j];
 //        while (t < tabT[j+1]) {
 //            //Calcul de d(k,j)
 //            for (int r = 1; r < k+1; ++r) {//il y a une modif ici
-//                for (int i = r; i < k+1; ++i) {
-//                    double om = calculOmega(k-r,i,t);
+//                for (int i = 1; i < etageDuDessus.size(); ++i) {
+//                    double om = calculOmega(k-r,j-k+r+i-1,t);
 ////                    std::cout << " k-r = " << k-r << " i = " << i << " t = " << t
 ////                              << " j = " << j << " n = " << n << std::endl;
 ////                    std::cout << "om = " << om << std::endl;
+//                    std::cout << "size " << etageDuDessus.size()<< std::endl;
 //                    double nouvX = om*etageDuDessus[i].x() + (1.0-om)*etageDuDessus[i-1].x();
 //                    double nouvY = om*etageDuDessus[i].y() + (1.0-om)*etageDuDessus[i-1].y();
 //                    listPointTmp.push_back(QPointF(nouvX,nouvY));
 //                }
+//                if (etageDuDessus.size() == 1) {
+//                    std::cout << "r = " << r << ", k = " << k << std::endl;
+//                }
 //                etageDuDessus = listPointTmp;
 //                listPointTmp.clear();
 //            }
+//            std::cout << "etagedudessus = " << etageDuDessus.size() << std::endl;
 //            listePointsFinaux.push_back(etageDuDessus[0]);
 //            t = t + 0.1;
 
 //        }
+//        std::cout << "----------" << std::endl;
 //    }
 
-    afficherListePoints(listePoints,qRgb(0,0,0));
-    afficherListePoints(listePointsFinaux, qRgb(0,255,0));
+//    afficherListePoints(listePoints,qRgb(0,0,0));
+//    afficherListePoints(listePointsFinaux, qRgb(0,255,0));
 
-    for (size_t var = 0; var < listePoints.size(); ++var) {
-        std::cout << "(" << listePoints[var].x() << "," << listePoints[var].y() << ")" << std::endl;
-    }
-
-    for (size_t var = 0; var < listePointsFinaux.size(); ++var) {
-        std::cout << "(" << listePointsFinaux[var].x() << "," << listePointsFinaux[var].y() << ")" << std::endl;
-    }
-
-
-//    for (int i = k; i < n+1; ++i) {
-//        listePoints.push_back(S(t));
+//    for (size_t var = 0; var < listePoints.size(); ++var) {
+//        std::cout << "(" << listePoints[var].x() << "," << listePoints[var].y() << ")" << std::endl;
 //    }
-//    afficherListePoints(listePoints);
+//    std::cout << "----------" << std::endl;
+//    for (size_t var = 0; var < listePointsFinaux.size(); ++var) {
+//        std::cout << "(" << listePointsFinaux[var].x() << "," << listePointsFinaux[var].y() << ")" << std::endl;
+//    }
 }
 
 

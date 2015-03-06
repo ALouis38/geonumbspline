@@ -30,6 +30,7 @@ private:
     std::vector<double> tabT;
 
     void draw();
+    void draw2();
 //    std::vector<double> * MainWindow::polynomeNi(int i, int k, std::vector<double> &t);
     std::vector<double> * calculOmega(int i, int k, std::vector<double> & t);
 
