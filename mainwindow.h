@@ -30,18 +30,13 @@ private:
     std::vector<double> tabT;
 
     void draw();
-    void draw2();
-//    std::vector<double> * MainWindow::polynomeNi(int i, int k, std::vector<double> &t);
     std::vector<double> * calculOmega(int i, int k, std::vector<double> & t);
 
     QPointF rechercherPoint(QPointF p1, QPointF p2, double t);
     void afficherListePoints(std::vector<QPointF> &listeP,QRgb rgb);
+    void afficherPoint(QPointF &p,QRgb rgb);
 
-    //Foncitons Louis
-
-    double calculOmega(int k, int i, double t);
-    double calculNi(int k, int i, double t);
-
+    double calculOmega(int i, int k, double t);
 };
 
 #endif // MAINWINDOW_H
